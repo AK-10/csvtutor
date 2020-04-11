@@ -8,6 +8,8 @@ use std::fs::File;
 use std::process;
 use std::io;
 
+use std::collections::HashMap;
+
 fn main() {
     if let Err(err) = run() {
         println!("{}", err);
@@ -15,7 +17,9 @@ fn main() {
     }
 }
 // 指定したレコードの型が、実際のそれぞれのレコードの順序と一致している必要がある
-type Record = (String, String, Option<u64>, f64, f64);
+// type Record = (String, String, Option<u64>, f64, f64);
+
+type Record = HashMap<String, String>;
 
 // Box<T>はヒープのデータを指す
 // https://doc.rust-jp.rs/book/second-edition/ch15-01-box.html
