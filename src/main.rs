@@ -14,21 +14,17 @@ fn main() {
         process::exit(1);
     }
 }
+// 指定したレコードの型が、実際のそれぞれのレコードの順序と一致している必要がある
+type Record = (String, String, Option<u64>, f64, f64);
 
 // Box<T>はヒープのデータを指す
 // https://doc.rust-jp.rs/book/second-edition/ch15-01-box.html
 fn run() -> Result<(), Box<Error>> {
-    let mut rdr = csv::ReaderBuilder::new()
-        .has_headers(false)
-        .delimiter(b';')
-        .double_quote(false)
-        .escape(Some(b'\\'))
-        .flexible(true)
-        .comment(Some(b'#'))
-        .from_reader(io::stdin());
+    let mut rdr = csv::Reader::from_reader(io::stdin());
 
-    for result in rdr.records() {
-        let record = result?;
+    for result in rdr.deserialize() {
+        // must tell Serde what type we want to deserialize into.
+        let record: Record = result?;
         println!("{:?}", record);
     }
 
