@@ -1,14 +1,31 @@
 // csv crateをプログラムから利用可能にする
 extern crate csv;
+extern crate serde;
 
-use std::env;
+#[macro_use]
+extern crate serde_derive;
+
 use std::error::Error;
-use std::ffi::OsString;
-use std::fs::File;
 use std::process;
 use std::io;
 
-use std::collections::HashMap;
+// Debugを継承する必要はないが，習慣としてどの型に対してもつけると良い.
+// field name がCSVの列順と同じではないことに注意されたい.
+// csv側
+// City,State,Population,Latitude,Longitude
+// Record側
+// latitude,longitude,population,city,state
+// #[serde(rename_all = "PascalCase")]でRecordで定義されているそれぞれのfieldを
+// パース時にキャピタライズしてfield名を合わせている
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+struct Record {
+    latitude: f64,
+    longitude: f64,
+    population: Option<f64>,
+    city: String,
+    state: String,
+}
 
 fn main() {
     if let Err(err) = run() {
@@ -16,10 +33,6 @@ fn main() {
         process::exit(1);
     }
 }
-// 指定したレコードの型が、実際のそれぞれのレコードの順序と一致している必要がある
-// type Record = (String, String, Option<u64>, f64, f64);
-
-type Record = HashMap<String, String>;
 
 // Box<T>はヒープのデータを指す
 // https://doc.rust-jp.rs/book/second-edition/ch15-01-box.html
