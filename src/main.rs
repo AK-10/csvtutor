@@ -22,6 +22,8 @@ use std::io;
 struct Record {
     latitude: f64,
     longitude: f64,
+    // deserializeに失敗した場合，全てNoneとして扱う
+    #[serde(deserialize_with = "csv::invalid_option")]
     population: Option<f64>,
     city: String,
     state: String,
