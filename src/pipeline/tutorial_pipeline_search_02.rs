@@ -6,7 +6,6 @@ use std::io;
 use std::process;
 
 fn run() -> Result<(), Box<Error>> {
-    // クエリを固定引数として受け取る
     let query = match env::args().nth(1) {
         None => return Err(From::from("expected 1 argument, but got none")),
         Some(query) => query,
@@ -15,12 +14,13 @@ fn run() -> Result<(), Box<Error>> {
     let mut rdr = csv::Reader::from_reader(io::stdin());
     let mut wtr = csv::Writer::from_writer(io::stdout());
 
-    wtr.write_record(rdr.headers()?)?;
+    wtr.write_record(rdr.byte_headers()?)?;
 
-    // rdr上のレコードを全て舐め，queryを含むレコードをwtrに書き込む
-    for result in rdr.records() {
+    for result in rdr.byte_records() {
         let record = result?;
-        if record.iter().any(|field| field == &query) {
+        // queryはString型でfieldは&[u8]型
+        // queryを比較できるように&[u8]に変換する必要あり
+        if record.iter().any(|field| field == query.as_bytes()) {
             wtr.write_record(&record)?;
         }
     }
