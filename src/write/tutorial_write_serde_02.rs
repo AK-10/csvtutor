@@ -2,7 +2,7 @@ extern crate csv;
 extern crate serde;
 
 #[macro_use]
-extern create serde_derive
+extern crate serde_derive;
 
 use std::error::Error;
 use std::io;
